@@ -1,0 +1,325 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.quaso.validation</groupId>
+    <artifactId>api-validation-service</artifactId>
+    <name>API Validation</name>
+    <packaging>pom</packaging>
+    <version>2.5.0-SNAPSHOT</version>
+
+    <properties>
+        <base.repository>http://nexus.1dc.com:8081/nexus/content/repositories/uk-digital-api</base.repository>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+		
+		<metrics.version>0.0.1-SNAPSHOT</metrics.version>
+
+        <springfox-swagger.version>2.9.2</springfox-swagger.version>
+        <swagger-annotations.version>1.5.22</swagger-annotations.version>
+        <swagger-models.version>1.5.22</swagger-models.version>
+        <commons-lang3.version>3.8.1</commons-lang3.version>
+        <commons-collections4.version>4.3</commons-collections4.version>
+        <commons-validator.version>1.6</commons-validator.version>
+        <!-- For config server -->
+        <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
+        <spring-cloud-starter-kubernetes-all.version>1.1.6.RELEASE</spring-cloud-starter-kubernetes-all.version>
+        <spring-boot-admin-starter.version>2.1.0</spring-boot-admin-starter.version>
+        <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
+        <!-- plugin versions -->
+        <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
+    </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.6.RELEASE</version>
+    </parent>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-kubernetes-all</artifactId>
+                <version>${spring-cloud-starter-kubernetes-all.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.quaso.common</groupId>
+                <artifactId>metrics</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <!-- //FirstData -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <!--
+                Because of full log of warnings and stack traces like 'NumberFormatException: For input string: ""'
+                specific versions of swagger-annotations and swagger-models have been set as recommended in
+                https://github.com/springfox/springfox/issues/2265
+            -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox-swagger.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-models</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox-swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-models</artifactId>
+                <version>${swagger-models.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${spring-boot-admin-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-core</artifactId>
+                <version>1.19.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>4.7.1</version>
+                <scope>runtime</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                            <version>2.1.6.RELEASE</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.4</version>
+                <executions>
+                    <!-- unit test configuration -->
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
+                            <!-- Sets the name of the property containing the settings for JaCoCo runtime agent. -->
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run. -->
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains the execution data. -->
+                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                            <!-- Sets the output directory for the code coverage report. -->
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
+                    <forkCount>2</forkCount>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.github.ferstl</groupId>
+                    <artifactId>depgraph-maven-plugin</artifactId>
+                    <version>3.3.0</version>
+                    <configuration>
+                        <showVersions>true</showVersions>
+                        <showDuplicates>true</showDuplicates>
+                        <showConflicts>true</showConflicts>
+                        <showGroupIds>true</showGroupIds>
+                        <showTypes>true</showTypes>
+                        <includes>
+                            <include>com.quaso.*</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
+                    <executions>
+                        <!-- unit test configuration -->
+                        <execution>
+                            <id>pre-unit-test</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                            <configuration>
+                                <destFile>${project.build.directory}/jacoco.exec</destFile>
+                                <!-- Sets the name of the property containing the settings for JaCoCo runtime agent. -->
+                                <propertyName>surefireArgLine</propertyName>
+                            </configuration>
+                        </execution>
+                        <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run. -->
+                        <execution>
+                            <id>post-unit-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <configuration>
+                                <!-- Sets the path to the file which contains the execution data. -->
+                                <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                                <!-- Sets the output directory for the code coverage report. -->
+                                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                            </configuration>
+                        </execution>
+                        <!-- integration test configuration -->
+                        <execution>
+                            <id>pre-integration-test</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                            <configuration>
+                                <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+                                <propertyName>failsafeArgLine</propertyName>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>post-integration-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <configuration>
+                                <dataFile>${project.build.directory}/jacoco-it.exec</dataFile>
+                                <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Integration tests, skip by default -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <configuration>
+                        <argLine>${failsafeArgLine}</argLine>
+                        <skipTests>true</skipTests>
+                        <includes>
+                            <include>**/*IT.java</include>
+                        </includes>
+                        <forkCount>2</forkCount>
+                    </configuration>
+                </plugin>
+                <!-- Excludes integration tests from the unit test execution -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>test-integration/**/*</exclude>
+                        </excludes>
+                        <forkCount>2</forkCount>
+                        <reuseForks>true</reuseForks>
+                        <argLine>-Xmx2048m</argLine>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <module>validation</module>
+        <module>api</module>
+		<module>app</module>
+    </modules>
+
+</project>
